@@ -2,6 +2,7 @@
 import { AppSidebar } from "@/components/sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function DashboardLayout({
   children,
@@ -23,6 +24,10 @@ export default function DashboardLayout({
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+              <Toaster 
+                position="top-center" 
+                richColors
+              />
               {children}
             </div>
           </div>
