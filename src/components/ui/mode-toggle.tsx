@@ -27,7 +27,7 @@ export function ModeToggle() {
       variant="ghost"
       size="icon"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="relative overflow-hidden rounded-md backdrop-blur-md border border-white/20 shadow-lg transition-all hover:scale-110 hover:shadow-xl"
+      className="relative overflow-hidden rounded-sm size-7"
     >
       <Sun
         className={`h-5 w-5 transition-all duration-500 ${
