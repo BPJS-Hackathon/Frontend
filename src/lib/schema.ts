@@ -10,25 +10,25 @@ export const medicalRecordSchema = z.object({
 });
 
 export const medicalPatientSchema = z.object({
-  nomor_peserta: z.string(),
-	nomor_keluarga: z.string(),
-	tanggal_lahir: z.string(),
-	hubungan_keluarga: z.int(),
-  jenis_kelamin: z.int(),
-  status_perkawinan: z.int(),
-  kelas_rawat: z.string(),
-  segmentasi_peserta: z.int(),
+  nomor_peserta: z.string().min(1, "Nomor peserta wajib diisi").max(32, "Nomor peserta maksimal 32 karakter"),
+  nomor_keluarga: z.string().min(1, "Nomor keluarga wajib diisi").max(32, "Nomor keluarga maksimal 32 karakter"),
+  tanggal_lahir: z.iso.date("tanggal lahir wajib diisi"),
+  hubungan_keluarga: z.number().int().min(1).max(5),
+  jenis_kelamin: z.number().int().min(1).max(2),
+  status_perkawinan: z.number().int().min(1).max(3),
+  kelas_rawat: z.string().min(1).max(10),
+  segmentasi_peserta: z.number().int().min(1).max(5),
   provinsi_tinggal: z.string(),
-  kabupaten_kota_tinggal: z.string(),
+  kabupaten_kota_tinggal: z.string("Kabupaten wajib diisi"),
   kepemilikan_faskes: z.string(),
-  jenis_faskes: z.string(),
+  jenis_faskes: z.number().int().min(1).max(3),
   provinsi_faskes: z.string(),
   kabupaten_kota_faskes: z.string(),
-  bobot: z.float64(),
-  tahun_sampel: z.int(),
-  status_kepesertaan: z.string(),
-  tahun_meninggal: z.int() || null,
-  created_by: z.string()
+  bobot: z.number(),
+  tahun_sampel: z.number().int(),
+  status_kepesertaan: z.string().min(1).max(16),
+  tahun_meninggal: z.number().int().nullable().optional(),
+  created_by: z.string().nullable().optional(),
 });
 
 export const medicalRecordTable = z.object({
@@ -74,3 +74,4 @@ export const columns: ColumnDef<MedicalRecordTable>[] = [
 
 export type MedicalRecordTable = z.infer<typeof medicalRecordTable>;
 export type MedicalRecordData = z.infer<typeof medicalRecordSchema>;
+export type MedicalPatientData = z.infer<typeof medicalPatientSchema>
