@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { CircleGauge } from "lucide-react"
+import { CircleGauge, User } from "lucide-react"
 import { NavMain } from "./nav-main"
 import { NavUser } from "./nav-user"
 import Link from "next/link"
@@ -24,9 +24,14 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
-      url: "#",
+      title: "Rekam Medis",
+      url: "/dashboard",
       icon: CircleGauge,
+    }, 
+    {
+      title: "Peserta",
+      url: "/patient",
+      icon: User
     }
   ],
 }
