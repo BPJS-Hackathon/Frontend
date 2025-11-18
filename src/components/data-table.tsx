@@ -50,11 +50,10 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [pageIndex, setPageIndex] = useState(0);
 
   const table = useReactTable({
-    data,
     columns,
+    data,
     pageCount: pagination ? Math.ceil(data.length / pageSize) : undefined,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -64,28 +63,17 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    manualPagination: pagination,
-    state: {
+    initialState: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
       pagination: pagination
         ? {
-            pageIndex,
             pageSize,
           }
         : undefined,
     },
-    onPaginationChange: pagination
-      ? (updater) => {
-          const newState =
-            typeof updater === "function"
-              ? updater({ pageIndex, pageSize })
-              : updater;
-          setPageIndex(newState.pageIndex);
-        }
-      : undefined,
   });
 
   return (
@@ -154,13 +142,10 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      {/* 
-        TODO: Fix pagination
-      */}
       {pagination && table.getPageCount() > 1 && (
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
-            Page {pageIndex + 1} of {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </div>
           <div className="flex items-center space-x-2">
             <Button

@@ -87,7 +87,7 @@ export default function PatientForm({schema, onSubmit, defaultValues}:PatiencePr
 
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button className="flex gap-1" type="button">
           <Plus className="mt-[1.5px]"/>
           <span>
