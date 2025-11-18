@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ColumnDef } from "@tanstack/react-table"
 
 export const medicalRecordSchema = z.object({
   patient_id: z.string().min(1, "Id pasien wajib diisi"),
@@ -39,38 +38,8 @@ export const medicalRecordTable = z.object({
   diagnosis: z.string(),
   treatment: z.string(),
   created_at: z.string(),
+  claim_status: z.number()
 });
-
-export const columns: ColumnDef<MedicalRecordTable>[] = [
-  {
-    accessorKey: "id",
-    header: "Id"
-  },
-  {
-    accessorKey: "patient_id",
-    header: "Id Pasien",
-  },
-  {
-    accessorKey: "facility_id",
-    header: "Id Fasilitas",
-  },
-  {
-    accessorKey: "doctor_name",
-    header: "Nama Dokter",
-  },
-  {
-    accessorKey: "diagnosis",
-    header: "Treatment"
-  },
-  {
-    accessorKey: "created_at",
-    header: "Tanggal",
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
-      return date.toLocaleDateString("id-ID");
-    },
-  },
-];
 
 export type MedicalRecordTable = z.infer<typeof medicalRecordTable>;
 export type MedicalRecordData = z.infer<typeof medicalRecordSchema>;

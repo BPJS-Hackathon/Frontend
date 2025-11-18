@@ -1,9 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2 } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import { toast } from "sonner";
-import { MedicalPatientData } from "@/lib/schema";
+import { MedicalPatientData, medicalPatientSchema } from "@/lib/schema";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import EditPatientForm from "@/components/edit-patient-form";
 
 const hubunganLabels: Record<number, string> = {
   1: "Peserta",
@@ -106,36 +108,37 @@ export const patientColumns: ColumnDef<MedicalPatientData>[] = [
     id: "actions",
     cell: ({ row }) => {
       const patient = row.original;
-
+      const handleSubmit = async (data: any) => {
+      const promise = new Promise((r) => setTimeout(r, 2000));
+      toast.promise(promise, {
+        loading: "Menyimpan...",
+        success: "Berhasil!",
+        error: "Gagal",
+      });
+      await promise;
+    };
       return (
-        <div className="flex items-center gap-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button
-            size="icon"
             variant="ghost"
-            onClick={() => {
-              toast.info(`Edit ${patient.nomor_peserta}`);
-            }}
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
+            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
             size="icon"
-            variant="ghost"
-            className="text-destructive hover:text-destructive"
-            onClick={() => {
-              toast.promise(
-                new Promise((r) => setTimeout(r, 1000)),
-                {
-                  loading: "Menghapus...",
-                  success: "Peserta dihapus",
-                  error: "Gagal menghapus",
-                }
-              );
-            }}
           >
-            <Trash2 className="h-4 w-4" />
+            <EllipsisVertical className="w-5 h-5"/>
+            <span className="sr-only">Open menu</span>
           </Button>
-        </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-32">
+          <EditPatientForm
+            onSubmit={handleSubmit}
+            schema={medicalPatientSchema}
+            defaultValues={patient}
+          />
+          <DropdownMenuSeparator />
+          <DropdownMenuItem variant="destructive">Hapus</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       );
     },
   },

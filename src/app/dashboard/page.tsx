@@ -1,10 +1,11 @@
 "use client"
 
 import { toast } from "sonner";
-import { columns, medicalRecordSchema, MedicalRecordTable } from "@/lib/schema";
+import { medicalRecordSchema, MedicalRecordTable } from "@/lib/schema";
 import { MedicalForm } from "@/components/form";
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
+import { medicalColumns } from "./column";
 
 function getData(): MedicalRecordTable[] {
   return [
@@ -15,6 +16,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "John Doe",
       diagnosis: "Demam Berdarah",
       treatment: "Rawat Inap",
+      claim_status: 1,
       created_at: "2025-11-16",
     },
     {
@@ -24,6 +26,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Sarah Mahendra",
       diagnosis: "Infeksi Saluran Pernapasan Akut",
       treatment: "Obat Jalan",
+      claim_status: 2,
       created_at: "2025-11-16",
     },
     {
@@ -33,6 +36,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Made Sukarta",
       diagnosis: "Tipes",
       treatment: "Rawat Inap",
+      claim_status: 3,
       created_at: "2025-11-16",
     },
     {
@@ -42,6 +46,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Luh Ayu Kartika",
       diagnosis: "Asma",
       treatment: "Nebulizer & Obat Jalan",
+      claim_status: 1,
       created_at: "2025-11-16",
     },
     {
@@ -51,6 +56,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Bagus Pratama",
       diagnosis: "Hipertensi",
       treatment: "Kontrol Rutin",
+      claim_status: 2,
       created_at: "2025-11-16",
     },
     {
@@ -60,6 +66,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Andi Surya",
       diagnosis: "Diabetes Mellitus",
       treatment: "Terapi & Obat Jalan",
+      claim_status: 3,
       created_at: "2025-11-16",
     },
     {
@@ -69,6 +76,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Citra Dewi",
       diagnosis: "Demam Tinggi",
       treatment: "Observasi",
+      claim_status: 1,
       created_at: "2025-11-16",
     },
     {
@@ -78,6 +86,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Putu Yogi",
       diagnosis: "Pneumonia",
       treatment: "Rawat Inap",
+      claim_status: 2,
       created_at: "2025-11-16",
     },
     {
@@ -87,6 +96,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Rizky Hanif",
       diagnosis: "Gastritis",
       treatment: "Obat Jalan",
+      claim_status: 3,
       created_at: "2025-11-16",
     },
     {
@@ -96,6 +106,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Ni Made Yuliani",
       diagnosis: "Migrain",
       treatment: "Obat Jalan",
+      claim_status: 1,
       created_at: "2025-11-16",
     },
     {
@@ -105,6 +116,7 @@ function getData(): MedicalRecordTable[] {
       doctor_name: "Dr. Ni Made Yuliani",
       diagnosis: "Migrain",
       treatment: "Obat Jalan",
+      claim_status: 2,
       created_at: "2025-11-16",
     }
   ]
@@ -143,7 +155,7 @@ export default function Dashboard() {
       </div>
       <section>
         <DataTable
-          columns={columns}
+          columns={medicalColumns}
           data={data}
           searchKey="patient_id"
           pagination
