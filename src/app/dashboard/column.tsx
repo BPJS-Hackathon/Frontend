@@ -86,7 +86,13 @@ export const medicalColumns: ColumnDef<MedicalRecordTable>[] = [
             schema={medicalRecordSchema}
             defaultValues={record}
           />
-          <ClainBtn id={record.patient_id}/>
+          <ClainBtn 
+            id={record.patient_id}
+            btnText="Buat Claim"
+            dialogTitle="Apakah anda ingin membuat claim?"
+            dialogDesc="Dengan menekan setuju claim bpjs dengan informasi yang tertera akan dibuat."
+            successText="Kirim"
+          />
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive">Hapus</DropdownMenuItem>
         </DropdownMenuContent>

@@ -14,9 +14,19 @@ import { toast } from "sonner";
 
 interface props {
   id: string
+  btnText: string
+  dialogTitle: string
+  dialogDesc: string
+  successText: string
 }
 
-export default function ClainBtn({ id } : props) {
+export default function ClainBtn({ 
+  id,
+  btnText,
+  dialogTitle,
+  dialogDesc,
+  successText
+} : props) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClaim = async () => {
@@ -31,20 +41,22 @@ export default function ClainBtn({ id } : props) {
   };
   return (
     <AlertDialog>
-      <AlertDialogTrigger className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full">
-        Buat Claim
+      <AlertDialogTrigger asChild>
+        <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full">
+          {btnText}
+        </div>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Apakah anda ingin membuat claim?</AlertDialogTitle>
+          <AlertDialogTitle> {dialogTitle} </AlertDialogTitle>
           <AlertDialogDescription>
-            Dengan menekan setuju claim bpjs dengan informasi yang tertera akan dibuat.
+            {dialogDesc}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleClaim} disabled={isLoading}>
-            "Kirim"
+            {successText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

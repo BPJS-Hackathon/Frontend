@@ -31,9 +31,9 @@ export default function LoginPage() {
     setIsLoading(true);
     const promise = new Promise((r) => setTimeout(r, 1500));
     toast.promise(promise, {
-      loading: "Logging In...",
-      success: "Log In",
-      error: "Failed",
+      loading: "Tunggu Sebentar...",
+      success: "Berhasil masuk",
+      error: "Gagal",
     });
     try { await promise; } finally { setIsLoading(false); }
   };

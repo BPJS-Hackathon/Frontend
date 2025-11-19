@@ -9,15 +9,22 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from "@/components/ui/form";
 import { RoleCard } from "@/components/role-card";
 import { User, Briefcase } from "lucide-react";
 
 const formSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  email: z.email("Alamat email tidak valid"),
+  password: z.string().min(8, "Password minimal 8 karakter"),
+  firstName: z.string().min(1, "Nama depan wajib diisi"),
+  lastName: z.string().min(1, "Nama belakang wajib diisi"),
   role: z.enum(["faskes", "bpjs"])
 });
 
