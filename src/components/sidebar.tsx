@@ -15,6 +15,7 @@ import { CircleGauge, User } from "lucide-react"
 import { NavMain } from "./nav-main"
 import { NavUser } from "./nav-user"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 const data = {
   user: {
@@ -22,7 +23,7 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  navMain: [
+  navUser: [
     {
       title: "Rekam Medis",
       url: "/dashboard",
@@ -32,11 +33,20 @@ const data = {
       title: "Peserta",
       url: "/patient",
       icon: User
-    }
+    },
+    
   ],
+  navAdmin: [
+    {
+      title: "Admin",
+      url: "/admin/dashboard",
+      icon: User
+    }
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const path = /admin/g.test(usePathname());
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -54,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={path ? data.navAdmin : data.navUser} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

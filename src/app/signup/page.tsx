@@ -19,12 +19,12 @@ import {
 } from "@/components/ui/form";
 import { RoleCard } from "@/components/role-card";
 import { User, Briefcase } from "lucide-react";
+import { api } from "@/lib/api";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
-  email: z.email("Alamat email tidak valid"),
+  username: z.string().min(1, "Username wajib diisi"),
   password: z.string().min(8, "Password minimal 8 karakter"),
-  firstName: z.string().min(1, "Nama depan wajib diisi"),
-  lastName: z.string().min(1, "Nama belakang wajib diisi"),
   role: z.enum(["faskes", "bpjs"])
 });
 
@@ -36,23 +36,34 @@ export default function SignUpPage() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
-      firstName: "",
-      lastName: "",
       role: "faskes",
     },
   });
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
-    const promise = new Promise((resolve) => setTimeout(resolve, 2000));
-    toast.promise(promise, {
-      loading: "Creating Account...",
-      success: "Account Created!",
-      error: "Failed",
+    const promise = fetch(api.auth.register(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data),
     });
-    try { await promise; } finally { setIsLoading(false); }
+    toast.promise(promise, {
+      loading: "Membuat Akun...",
+      success: "Akun Berhasil dibuat!",
+      error: "Gagal!",
+    });
+    try { 
+      const res = await promise; 
+      if (res.status === 201) {
+        redirect('/login');
+      }
+    } finally { 
+      setIsLoading(false); 
+    }
   };
 
   return (
@@ -102,44 +113,14 @@ export default function SignUpPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="John" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Doe" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
               <FormField
                 control={form.control}
-                name="email"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="john@example.com" {...field} />
+                      <Input type="text" placeholder="John Doe" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
