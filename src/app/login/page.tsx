@@ -10,11 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner"
+import { api } from "@/lib/api";
 
 const formSchema = z.object({
-  email: z.email("Invalid email"),
+  username: z.string().min(1, "Invalid email"),
   password: z.string().min(1, "Password is required"),
 });
+
+export type FormData = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,20 +25,37 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: ""
     }
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true);
-    const promise = new Promise((r) => setTimeout(r, 1500));
-    toast.promise(promise, {
-      loading: "Logging In...",
-      success: "Log In",
-      error: "Failed",
+    const promise = fetch(api.auth.login(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
     });
-    try { await promise; } finally { setIsLoading(false); }
+
+    toast.promise(promise, {
+      loading: "Tunggu Sebentar...",
+      success: "Berhasil masuk",
+      error: "Gagal",
+    });
+
+    try { 
+      const res = await promise; 
+      if (res.status === 200) {
+        const resData = await res.json();
+        localStorage.setItem("access_token", resData.token);
+        
+      }
+    } finally { 
+      setIsLoading(false); 
+    }
   };
 
   return (
@@ -44,16 +64,16 @@ export default function LoginPage() {
         <h2 className="text-3xl font-bold text-center mb-8">Welcome back</h2>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} method="POST" className="space-y-6">
 
             <FormField
               control={form.control}
-              name="email"
+              name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="john@example.com" {...field} />
+                    <Input type="text" placeholder="John Doe" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

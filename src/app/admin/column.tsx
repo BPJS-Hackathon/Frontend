@@ -11,10 +11,11 @@ import { toast } from "sonner";
 const claimStatusLabels: Record<number, string> = {
   1: "Aktif",
   2: "Tidak Aktif",
-  3: "Belum Diajukan"
+  3: "Belum Diajukan",
+  4: "Sedang Diajukan"
 }
 
-export const medicalColumns: ColumnDef<MedicalRecordTable>[] = [
+export const adminColumn: ColumnDef<MedicalRecordTable>[] = [
   {
     accessorKey: "id",
     header: "Id"
@@ -59,6 +60,12 @@ export const medicalColumns: ColumnDef<MedicalRecordTable>[] = [
     id: "actions",
     cell: ({ row }) => {
       const record = row.original;
+      const data = {
+        btnText: "Terima Claim",
+        dialogTitle: "Apakah anda ingin menerima claim?",
+        dialogDesc: "Dengan menekan setuju claim bpjs dengan informasi yang tertera akan dibuat.",
+        successText: "Terima"
+      }
       const handleSubmit = async (data: any) => {
       const promise = new Promise((r) => setTimeout(r, 2000));
       toast.promise(promise, {
@@ -87,11 +94,11 @@ export const medicalColumns: ColumnDef<MedicalRecordTable>[] = [
             defaultValues={record}
           />
           <ClainBtn 
-            id={record.patient_id}
-            btnText="Buat Claim"
-            dialogTitle="Apakah anda ingin membuat claim?"
-            dialogDesc="Dengan menekan setuju claim bpjs dengan informasi yang tertera akan dibuat."
-            successText="Kirim"
+            id={record.patient_id} 
+            btnText={data.btnText}
+            dialogTitle={data.dialogTitle}
+            dialogDesc={data.dialogDesc}
+            successText={data.successText}
           />
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive">Hapus</DropdownMenuItem>

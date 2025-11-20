@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { ScrollArea } from "./ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { redirect } from "next/navigation";
 
 const hubunganOptions = [
   { value: 1, label: "Peserta" },
@@ -45,11 +46,13 @@ const jenisFaskesOptions = [
 
 interface PatienceProp {
   schema: z.ZodObject<any>
-  onSubmit: (data: any) => Promise<void>
+  onSubmit: (data: any) => Promise<Response>
   defaultValues?: any
 }
 
 export default function PatientForm({schema, onSubmit, defaultValues}:PatienceProp) {
+  type FormData = z.infer<typeof schema>;
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: defaultValues || {
@@ -75,11 +78,35 @@ export default function PatientForm({schema, onSubmit, defaultValues}:PatiencePr
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: FormData) => {
     setIsLoading(true);
     try {
-      await onSubmit(data);
-      form.reset();
+      const raw = {
+        "pstv01": data.nomor_peserta,
+        "pstv02": data.nomor_keluarga,
+        "pstv03": data.tanggal_lahir,
+        "pstv04": data.hubungan_keluarga,
+        "pstv05": data.jenis_kelamin,
+        "pstv06": data.status_perkawinan,
+        "pstv07": data.kelas_rawat,
+        "pstv08": data.segmentasi_peserta,
+        "pstv09": data.provinsi_tinggal,
+        "pstv10": data.kabupaten_kota_tinggal,
+        "pstv11": data.kepemilikan_faskes,
+        "pstv12": data.jenis_faskes,
+        "pstv13": data.provinsi_faskes,
+        "pstv14": data.kabupaten_kota_faskes,
+        "pstv15": parseFloat(data.bobot as string),
+        "pstv16": data.tahun_sampel,
+        "pstv17": data.status_kepesertaan,
+        "pstv18": data.tahun_meninggal,
+      }
+      const res = await onSubmit(raw);
+      if (res.status === 201) {
+        form.reset();
+      } else if (res.status === 401) {
+        redirect('/login');
+      }
     } finally {
       setIsLoading(false);
     }
