@@ -1,12 +1,30 @@
 import { z } from "zod";
 
-export const medicalRecordSchema = z.object({
-  patient_id: z.string().min(1, "Id pasien wajib diisi"),
-  facility_id: z.string().min(1, "Id fasilitas wajib diisi"),
-  doctor_name: z.string().min(1, "Nama dokter wajib diisi"),
-  diagnosis: z.string().min(1, "Diagnosis wajib diisi"),
-  treatment: z.string().min(1, "Tindakan wajib diisi"),
+const baseMedicalSchema = z.object({
+  NIK: z.string().min(1, "NIK perserta wajib diisi"),
+  kode_diagnosis: z.enum(["A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09"], "pilih salah satu"),
+  note: z.string().nullable(),
+  tanggal_pendaftaran: z.iso.date("Tanggal pendaftaran wajib diisi"),
+  hasil: z.enum(["SEMBUH", "RUJUK"], "pilih salah satu"),
+  amount: z.number()
 });
+
+const rawatJalanSchema = z.object({
+  ...baseMedicalSchema.shape,
+  jenis_rawat: z.literal("RAWAT JALAN"),
+  tanggal_pulang: z.string().nullable()
+});
+
+const rawatInapSchema = z.object({
+  ...baseMedicalSchema.shape,
+  jenis_rawat: z.literal("RAWAT INAP"),
+  tanggal_pulang: z.iso.date("Tanggal pendaftaran wajib diisi")
+});
+
+export const medicalRecordSchema = z.discriminatedUnion("jenis_rawat", [
+  rawatJalanSchema,
+  rawatInapSchema
+]);
 
 export const medicalPatientSchema = z.object({
   nomor_peserta: z.string().min(1, "Nomor peserta wajib diisi").max(32, "Nomor peserta maksimal 32 karakter"),
@@ -31,16 +49,29 @@ export const medicalPatientSchema = z.object({
 });
 
 export const medicalRecordTable = z.object({
-  id: z.string(),
-  patient_id: z.string(),
-  facility_id: z.string(),
-  doctor_name: z.string(),
-  diagnosis: z.string(),
-  treatment: z.string(),
-  created_at: z.string(),
-  claim_status: z.number()
+  NIK: z.string(),
+  kode_diagnosis: z.string(),
+  note: z.string(),
+  tanggal_pendaftaran: z.string(),
+  hasil: z.string(),
+  jenis_rawat: z.string(),
+  tanggal_pulang: z.string()
 });
 
+export const medicalRecordAdminTable = z.object({
+  NIK: z.string(),
+  kode_diagnosis: z.string(),
+  note: z.string(),
+  tanggal_pendaftaran: z.string(),
+  hasil: z.string(),
+  jenis_rawat: z.string(),
+  tanggal_pulang: z.string(),
+  status: z.string(),
+  amount: z.number(),
+  claim_id: z.string(),
+});
+
+export type MedicalRecordAdminTable = z.infer<typeof medicalRecordAdminTable>;
 export type MedicalRecordTable = z.infer<typeof medicalRecordTable>;
 export type MedicalRecordData = z.infer<typeof medicalRecordSchema>;
 export type MedicalPatientData = z.infer<typeof medicalPatientSchema>

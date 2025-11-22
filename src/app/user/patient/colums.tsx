@@ -98,48 +98,47 @@ export const patientColumns: ColumnDef<MedicalPatientData>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status_kepesertaan") as string;
       return (
-        <Badge variant={status === "aktif" ? "default" : "destructive"}>
+        <Badge variant={status === "Aktif" ? "default" : "destructive"}>
           {status}
         </Badge>
       );
     },
   },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const patient = row.original;
-      const handleSubmit = async (data: any) => {
-      const promise = new Promise((r) => setTimeout(r, 2000));
-      toast.promise(promise, {
-        loading: "Menyimpan...",
-        success: "Berhasil!",
-        error: "Gagal",
-      });
-      await promise;
-    };
-      return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <EllipsisVertical className="w-5 h-5"/>
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <EditPatientForm
-            onSubmit={handleSubmit}
-            schema={medicalPatientSchema}
-            defaultValues={patient}
-          />
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Hapus</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      );
-    },
-  },
+  // {
+  //   id: "actions",
+  //   cell: ({ row }) => {
+  //     const patient = row.original;
+  //     const handleSubmit = async (data: any) => {
+  //     const promise = new Promise((r) => setTimeout(r, 2000));
+  //     toast.promise(promise, {
+  //       loading: "Menyimpan...",
+  //       success: "Berhasil!",
+  //       error: "Gagal",
+  //     });
+  //     await promise;
+  //   };
+  //     return (
+  //     <DropdownMenu>
+  //       <DropdownMenuTrigger asChild>
+  //         <Button
+  //           variant="ghost"
+  //           className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+  //           size="icon"
+  //         >
+  //           <EllipsisVertical className="w-5 h-5"/>
+  //           <span className="sr-only">Open menu</span>
+  //         </Button>
+  //       </DropdownMenuTrigger>
+  //       <DropdownMenuContent align="end" className="w-32">
+  //         <EditPatientForm
+  //           onSubmit={handleSubmit}
+  //           schema={medicalPatientSchema}
+  //           defaultValues={patient}
+  //         />
+  //         <DropdownMenuItem variant="destructive">Hapus</DropdownMenuItem>
+  //       </DropdownMenuContent>
+  //     </DropdownMenu>
+  //     );
+  //   },
+  // },
 ];

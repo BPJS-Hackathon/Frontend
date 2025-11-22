@@ -29,9 +29,6 @@ export  function Navbar() {
             <Button variant="ghost" asChild>
               <Link href="/login">Log in</Link>
             </Button>
-            <Button asChild className="bg-primary/90 hover:bg-primary text-primary-foreground shadow-md">
-              <Link href="/signup">Sign up</Link>
-            </Button>
           </div>
 
           <ModeToggle />
