@@ -34,10 +34,10 @@ export function NavUser({
     name: string
     email: string
     avatar: string
+    logout: () => void
   }
 }) {
-  const { isMobile } = useSidebar()
-
+  const { isMobile } = useSidebar();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -92,7 +92,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={"/"} className="flex items-center justify-start gap-2 w-full">
+              <Link href={"/"} onClick={user.logout} className="flex items-center justify-start gap-2 w-full">
                 <LogOutIcon/>
                 Log out
               </Link>

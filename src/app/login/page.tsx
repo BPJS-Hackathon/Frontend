@@ -1,6 +1,5 @@
-"use client";
+"use client"
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card } from "@/components/ui/card";
-import { toast } from "sonner"
-import { api } from "@/lib/api";
+import { AuthStore } from "@/store/auth-store";
+import { redirect } from "next/navigation";
+
 
 const formSchema = z.object({
   username: z.string().min(1, "Invalid email"),
@@ -20,7 +20,7 @@ const formSchema = z.object({
 export type FormData = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const {isLoading, isSuccess, login, user, me} = AuthStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -31,30 +31,22 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: FormData) => {
-    setIsLoading(true);
-    const promise = fetch(api.auth.login(), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-
-    toast.promise(promise, {
-      loading: "Tunggu Sebentar...",
-      success: "Berhasil masuk",
-      error: "Gagal",
-    });
-
-    try { 
-      const res = await promise; 
-      if (res.status === 200) {
-        const resData = await res.json();
-        localStorage.setItem("access_token", resData.token);
-        
-      }
-    } finally { 
-      setIsLoading(false); 
+    const {success, token} = await login(data);
+    localStorage.setItem("access_token", token);
+    if (success) {
+      me();
+      setTimeout(() => {
+        switch (user?.role) {
+        case "faskes":
+          return  redirect("/user");
+        case "admin":
+          return redirect("/admin");
+        case "auditor":
+          return  redirect("/admin");
+        default:
+          break;
+        }
+      }, 1000);
     }
   };
 

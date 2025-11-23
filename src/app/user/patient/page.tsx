@@ -7,43 +7,42 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import PatientForm from "@/components/patient-form";
 import { api } from "@/lib/api";
-import { usePatients } from "@/hooks/use-patient";
 
 export default function DaftarPeserta() {
   const [mounted, setMounted] = useState(false);
   const [patients, setPatients] = useState<MedicalPatientData[]>([]);
 
-  const handleSubmit = async (data: any) => {
-    const token = localStorage.getItem("access_token");
+  // const handleSubmit = async (data: any) => {
+  //   const token = localStorage.getItem("access_token");
 
-    const promise = fetch(api.user(), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(data)
-    });
+  //   const promise = fetch(api.user(), {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       "Authorization": `Bearer ${token}`
+  //     },
+  //     body: JSON.stringify(data)
+  //   });
 
-    toast.promise(promise, {
-      loading: "Menyimpan...",
-      success: "Berhasil!",
-      error: "Gagal",
-    });
-    return promise;
-  };
+  //   toast.promise(promise, {
+  //     loading: "Menyimpan...",
+  //     success: "Berhasil!",
+  //     error: "Gagal",
+  //   });
+  //   return promise;
+  // };
 
   const fetchPatients = async () => {
     const token = localStorage.getItem("access_token");
 
-    const res = await fetch(api.user(), {
+    const res = await fetch(api.faskes1.peserta(), {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
       }
     });
 
-    if (res.status !== 200) {
+    if (!res.ok) {
       toast.error("Gagal memuat data!");
       return;
     }
@@ -65,7 +64,7 @@ export default function DaftarPeserta() {
     <div className="mx-4 flex flex-col gap-4">
       <div className="flex justify-between mb-6">
         <h1 className="text-lg mx-2 font-bold">Daftar Peserta BPJS</h1>
-        <PatientForm onSubmit={handleSubmit} schema={medicalPatientSchema}/>
+        {/* <PatientForm onSubmit={handleSubmit} schema={medicalPatientSchema}/> */}
       </div>
 
       <section>

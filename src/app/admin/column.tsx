@@ -1,57 +1,53 @@
-import ClainBtn from "@/components/claim-btn";
-import { EditMedicalForm } from "@/components/edit-form";
+import ClaimBtn from "@/components/claim-btn";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { medicalRecordSchema, MedicalRecordTable } from "@/lib/schema";
+import { MedicalRecordAdminTable } from "@/lib/schema";
+import { AuthStore } from "@/store/auth-store";
 import { ColumnDef } from "@tanstack/react-table";
 import { EllipsisVertical } from "lucide-react";
-import { toast } from "sonner";
 
-const claimStatusLabels: Record<number, string> = {
-  1: "Aktif",
-  2: "Tidak Aktif",
-  3: "Belum Diajukan",
-  4: "Sedang Diajukan"
-}
-
-export const adminColumn: ColumnDef<MedicalRecordTable>[] = [
+export const adminColumn: ColumnDef<MedicalRecordAdminTable>[] = [
   {
-    accessorKey: "id",
-    header: "Id"
+    accessorKey: "peserta_nik",
+    header: "NIK"
   },
   {
-    accessorKey: "patient_id",
-    header: "Id Pasien",
+    accessorKey: "diagnosis_code",
+    header: "kode diagnosis",
   },
   {
-    accessorKey: "facility_id",
-    header: "Id Fasilitas",
+    accessorKey: "note",
+    header: "Catatan",
   },
   {
-    accessorKey: "doctor_name",
-    header: "Nama Dokter",
+    accessorKey: "jenis_rawat",
+    header: "Jenis Rawat",
   },
   {
-    accessorKey: "diagnosis",
-    header: "Treatment"
+    accessorKey: "admission_date",
+    header: "Tanggal Masuk"
   },
   {
-    accessorKey: "created_at",
-    header: "Tanggal",
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("created_at"));
-      return date.toLocaleDateString("id-ID");
-    },
+    accessorKey: "discharge_date",
+    header: "Tanggal Keluar"
   },
   {
-    accessorKey: "claim_status",
+    accessorKey: "outcome",
+    header: "Hasil",
+  },
+  {
+    accessorKey: "amount",
+    header: "Biaya",
+  },
+  {
+    accessorKey: "status",
     header: "Status Klaim",
     cell: ({ row }) => {
-      const status = row.getValue("claim_status") as number;
+      const status = row.getValue("status") as string;
       return (
-        <Badge variant={ status === 1 ? "default" : (status === 2 ? "destructive" : "outline")}>
-          {claimStatusLabels[status]}
+        <Badge variant={ status === "SUBMITTED" ? "default" : (status === "REJECTED" ? "destructive" : "outline")}>
+          {status}
         </Badge>
       );
     },
@@ -61,20 +57,22 @@ export const adminColumn: ColumnDef<MedicalRecordTable>[] = [
     cell: ({ row }) => {
       const record = row.original;
       const data = {
-        btnText: "Terima Claim",
+        btnText: "Claim",
         dialogTitle: "Apakah anda ingin menerima claim?",
         dialogDesc: "Dengan menekan setuju claim bpjs dengan informasi yang tertera akan dibuat.",
-        successText: "Terima"
+        successText: "Terima",
+        data: {
+          status: row.getValue("status") as string,
+          amount: row.getValue("amount") as number,
+          verified: "Terverifikasi"
+        }
       }
-      const handleSubmit = async (data: any) => {
-      const promise = new Promise((r) => setTimeout(r, 2000));
-      toast.promise(promise, {
-        loading: "Menyimpan...",
-        success: "Berhasil!",
-        error: "Gagal",
-      });
-      await promise;
-    };
+      const {user} = AuthStore();
+
+      if (user?.role !== "admin") {
+        return null;
+      }
+      
       return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -88,17 +86,13 @@ export const adminColumn: ColumnDef<MedicalRecordTable>[] = [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <EditMedicalForm
-            onSubmit={handleSubmit}
-            schema={medicalRecordSchema}
-            defaultValues={record}
-          />
-          <ClainBtn 
-            id={record.patient_id} 
+          <ClaimBtn 
+            id={record.claim_id} 
             btnText={data.btnText}
             dialogTitle={data.dialogTitle}
             dialogDesc={data.dialogDesc}
             successText={data.successText}
+            data={data.data}
           />
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive">Hapus</DropdownMenuItem>
@@ -106,5 +100,5 @@ export const adminColumn: ColumnDef<MedicalRecordTable>[] = [
       </DropdownMenu>
       )
     }
-  },
+  },   
 ];
