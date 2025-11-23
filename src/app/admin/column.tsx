@@ -93,7 +93,6 @@ export const adminColumn: ColumnDef<MedicalRecordAdminTable>[] = [
             dialogDesc={data.dialogDesc}
             successText={data.successText}
             data={data.data}
-            isDisabled={data.data.status === "PAID" || "REJECT" ? true : false}
           />
           <DropdownMenuSeparator />
           <DropdownMenuItem variant="destructive">Hapus</DropdownMenuItem>

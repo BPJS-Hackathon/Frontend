@@ -28,7 +28,6 @@ interface props {
   dialogDesc: string
   successText: string
   data: verifData
-  isDisabled: boolean
 }
 
 export default function ClaimBtn({ 
@@ -38,7 +37,6 @@ export default function ClaimBtn({
   dialogDesc,
   successText,
   data,
-  isDisabled
 } : props) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,6 +44,25 @@ export default function ClaimBtn({
     setIsLoading(true);
     const token = localStorage.getItem("access_token");
     const promise = fetch(api.admin.putClaimById(id), {
+      method: "PUT",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    })
+    toast.promise(promise, {
+      loading: "Menyimpan...",
+      success: `Berhasil membuat Perubahan claim ${id}`,
+      error: "Gagal",
+    });
+    try { await promise; } finally { setIsLoading(false) }
+  };
+
+  const blockClaim = async (data:any) => {
+    setIsLoading(true);
+    const token = localStorage.getItem("access_token");
+    const promise = fetch("http://192.18.18.27/api/claim", {
       method: "PUT",
       headers: {
         'Content-Type': 'application/json',
@@ -71,8 +88,7 @@ export default function ClaimBtn({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <div className={`relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground w-full
-        ${isDisabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}>
+        <div className={`relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground w-full`}>
           {btnText}
         </div>
       </AlertDialogTrigger>
@@ -118,10 +134,10 @@ export default function ClaimBtn({
 
         <AlertDialogFooter>
           <AlertDialogCancel>Batal</AlertDialogCancel>
-          <AlertDialogAction onClick={() => handleClaim({status: "REJECTED"})} disabled={isLoading}>
+          <AlertDialogAction onClick={() => {handleClaim({status: "REJECTED"}); blockClaim({claim_id: id, status: "REJECTED"})}} disabled={isLoading}>
             Tolak
           </AlertDialogAction>
-          <AlertDialogAction onClick={() => handleClaim({status: "PAID"})} disabled={isLoading}>
+          <AlertDialogAction onClick={() => {handleClaim({status: "PAID"}); blockClaim({claim_id: id, status: "PAID"})}} disabled={isLoading}>
             {successText}
           </AlertDialogAction>
         </AlertDialogFooter>

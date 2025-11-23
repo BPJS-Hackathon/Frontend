@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { AuthStore } from "@/store/auth-store";
 import { redirect } from "next/navigation";
 
+
 const formSchema = z.object({
   username: z.string().min(1, "Invalid email"),
   password: z.string().min(1, "Password is required"),
@@ -34,16 +35,18 @@ export default function LoginPage() {
     localStorage.setItem("access_token", token);
     if (success) {
       me();
-      switch (user?.role) {
-      case "faskes":
-        return redirect("/user");
-      case "admin":
-        return redirect("/admin");
-      case "auditor":
-        return redirect("/admin");
-      default:
-        break;
-      }
+      setTimeout(() => {
+        switch (user?.role) {
+        case "faskes":
+          return  redirect("/user");
+        case "admin":
+          return redirect("/admin");
+        case "auditor":
+          return  redirect("/admin");
+        default:
+          break;
+        }
+      }, 1000);
     }
   };
 

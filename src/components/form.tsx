@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Loader2, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { User } from "@/store/auth-store";
 import { api } from "@/lib/api";
+import { toast } from "sonner";
 
 const kodeDiagnosisOptions = [
   { label: "A00", value:"A00" },
@@ -36,6 +37,11 @@ const jenisRawatOptions = [
   { label: "RAWAT INAP", value: "RAWAT INAP" },
 ];
 
+const jenisFaskesOptions = [
+  { label: "Faskes 1", value: "Faskes 1" },
+  { label: "Faskes 2", value: "Faskes 2" }
+]
+
 interface FormProps {
   schema: z.ZodObject<any>;
   onSubmit: (data: any) => Promise<Response>;
@@ -55,15 +61,19 @@ export function MedicalForm({ schema, onSubmit, defaultValues, user }: FormProps
       jenis_rawat: "RAWAT JALAN",
       hasil: "SEMBUH",
       tanggal_pulang: "",
-      amount: 500000
+      amount: 500000,
+      jenis_faskes: null
     }
   });
 
   const isFaskes1 = user?.faskes.jenis_faskes === 'FASKES 1';
   const API = isFaskes1 ? api.faskes1.getAllDiagnosis() : api.faskes2.getAllDiagnosis();
+  const BLOCKCHAIN_API = isFaskes1 ? api.blockchain.nodeFaskes1() : api.blockchain.nodeFaskes2()
   const [isLoading, setIsLoading] = useState(false);
+  const [isShow, setShow] = useState(false);
 
   const selectedDiagnosis = form.watch("kode_diagnosis");
+  const selectedRujukan = form.watch("hasil");
 
   const handleSubmit = async (data: any) => {
     setIsLoading(true);
@@ -93,8 +103,43 @@ export function MedicalForm({ schema, onSubmit, defaultValues, user }: FormProps
     }
 
     try {
-      const res = await onSubmit(isFaskes1 ? rekam_medis : aggregator);
+      const payload = isFaskes1 ? rekam_medis : aggregator
+      const res = await onSubmit(payload);
       if (res.ok) {
+
+        const r = await res.json();
+        let bcPayload;
+        if (isFaskes1) {
+          bcPayload = {
+            ...payload,
+            "id": r.rekam_medis_id,
+          }
+        } else {
+          bcPayload = {
+            ...payload,
+            "id": r.rekam_medis_id,
+            "claim_id": r.claim_id,
+          }
+        }
+
+        console.log(bcPayload);
+        const endpoint = isFaskes1 ? "/api/rekam_medis/fk1" : "/api/rekam_medis/fk2"
+        const res2 = await fetch(`${BLOCKCHAIN_API}${endpoint}`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(bcPayload)
+        });
+
+        if (!res2.ok) {
+          console.log(await res2.json());
+          return;
+        }
+
+        // const bc = await res2.json()
+        // console.log(bc.rujukan_id)
+
         form.reset();
       }
     } finally {
@@ -130,6 +175,14 @@ export function MedicalForm({ schema, onSubmit, defaultValues, user }: FormProps
       form.setValue("amount", diagnosis.harga);
     }
   }, [selectedDiagnosis]);
+
+  useEffect(() => {
+    if (selectedRujukan && selectedRujukan === "RUJUK") {
+      setShow(true);
+    } else {
+      setShow(false)
+    }
+  }, [selectedRujukan]);
 
   useEffect(() => {
     if (user && localStorage.getItem("access_token")) {
@@ -308,6 +361,33 @@ export function MedicalForm({ schema, onSubmit, defaultValues, user }: FormProps
                         <FormControl>
                           <Input type="number" placeholder="..."  {...field} disabled />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                { isShow && (
+                  <FormField
+                    control={form.control}
+                    name="jenis_faskes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>JenisFaskes</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Pilih hasil" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {jenisFaskesOptions.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

@@ -6,11 +6,12 @@ import { DataTable } from "@/components/data-table";
 import { adminColumn } from "./column";
 import { AuthStore } from "@/store/auth-store";
 import { api } from "@/lib/api";
+import { blockchainColumn } from "./column-blockchain";
 
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [datas, setDatas] = useState([]);
-  
+  const [block, setBlock] = useState([]);
 
   const handleSubmit = async (data: any) => {
     const promise = new Promise((r) => setTimeout(r, 2000));
@@ -45,13 +46,31 @@ export default function Dashboard() {
       claim_id: item.claim_id
     }));
     setDatas(transformedData);
-    console.log(transformedData);
+  }
+
+  const fetchBlockChain = async () => {
+    const res = await fetch("http://192.168.18.27:6691/api/blocks", {
+      method: "GET",
+      headers: {
+        "Content-Type": 'application/json',
+      }
+    });
+
+    if (!res.ok) {
+      toast.error("Gagal memuat data!");
+      return;
+    }
+
+    const response = await res.json();
+    setBlock(response);
+    console.log(response);
   }
 
   useEffect(() => {
     setMounted(true);
     if (localStorage.getItem("access_token")) {
       fetchMedicalClaim();
+      fetchBlockChain();
     }
   }, []); 
 
@@ -67,6 +86,15 @@ export default function Dashboard() {
           columns={adminColumn}
           data={datas}
           searchKey="peserta_nik"
+          pagination
+          pageSize={5}
+        />
+      </section>
+      <section>
+        <DataTable
+          columns={blockchainColumn}
+          data={block}
+          searchKey="height"
           pagination
           pageSize={5}
         />

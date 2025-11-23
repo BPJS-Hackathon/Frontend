@@ -22,5 +22,11 @@ export const api = {
     getAllClaims: () => `${API_BASE_URL}/admin/claims`,
     getClaimById: (id: string) => `${API_BASE_URL}/admin/claims/${id}`,
     putClaimById: (id: string) => `${API_BASE_URL}/admin/claims/${id}/status`,
+  },
+
+  blockchain: {
+    nodeFaskes1: () => "http://192.168.18.27:6661",
+    nodeFaskes2: () => "http://192.168.18.27:6662",
+    nodeAdmin: () => "http://192.168.18.27:6691"
   }
 }

@@ -1,12 +1,19 @@
 import { z } from "zod";
 
+const blockchainSchema = z.object({
+  height: z.number(),
+  timestamp: z.number(),
+  transactions_type: z.array(z.string()),
+})
+
 const baseMedicalSchema = z.object({
   NIK: z.string().min(1, "NIK perserta wajib diisi"),
   kode_diagnosis: z.enum(["A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09"], "pilih salah satu"),
   note: z.string().nullable(),
   tanggal_pendaftaran: z.iso.date("Tanggal pendaftaran wajib diisi"),
   hasil: z.enum(["SEMBUH", "RUJUK"], "pilih salah satu"),
-  amount: z.number()
+  amount: z.number(),
+  jenis_faskes: z.enum(["Faskes 1", "Faskes 2"]).nullable(),
 });
 
 const rawatJalanSchema = z.object({
@@ -71,6 +78,7 @@ export const medicalRecordAdminTable = z.object({
   claim_id: z.string(),
 });
 
+export type blockchainTable = z.infer<typeof blockchainSchema>
 export type MedicalRecordAdminTable = z.infer<typeof medicalRecordAdminTable>;
 export type MedicalRecordTable = z.infer<typeof medicalRecordTable>;
 export type MedicalRecordData = z.infer<typeof medicalRecordSchema>;
